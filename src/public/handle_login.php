@@ -23,13 +23,11 @@ if (empty($errors)) {
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email");
     $stmt->execute(['email' => $email]);
     $result=$stmt->fetch(PDO::FETCH_LAZY);
-    if (password_verify($password, $result['password'])) {
-        print_r($result);
-        print_r("Success");
+    if (isset($result['email']) and password_verify($password, $result['password'])) {
+        setcookie('user_id', $result['id']);
+        header('Location: /catalog.php');
     }else{
         $errors['wrong_psw'] = 'Incorrect email or password!';
-        require_once './get_login.php';
     }
-}else{
-    require_once './get_login.php';
 };
+require_once './get_login.php';
