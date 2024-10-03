@@ -9,7 +9,7 @@
 <body>
 <div class="wrapper">
     <h2>Log in</h2>
-    <form action="handle_login.php" method="POST">
+    <form action="/login" method="POST">
         <label style="color: red"><?php if (isset($errors['wrong_psw'])){print_r($errors['wrong_psw']);};?></label>
         <div class="input-box">
             <label style="color: red"><?php if (isset($errors['email'])){print_r($errors['email']);};?></label>
@@ -23,7 +23,7 @@
             <input type="Submit" value="Log in">
         </div>
         <div class="text">
-            <h3>Don't have an account? <a href="./get_registration.php">Register now</a></h3>
+            <h3>Don't have an account? <a href="/register">Register now</a></h3>
         </div>
     </form>
     <style>@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');

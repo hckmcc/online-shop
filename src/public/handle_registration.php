@@ -49,4 +49,4 @@ if (empty($errors)) {
     print_r($stmt->fetchAll());
 }else{
     require_once './get_registration.php';
-    };
+};

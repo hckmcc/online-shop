@@ -24,8 +24,9 @@ if (empty($errors)) {
     $stmt->execute(['email' => $email]);
     $result=$stmt->fetch(PDO::FETCH_LAZY);
     if (isset($result['email']) and password_verify($password, $result['password'])) {
-        setcookie('user_id', $result['id']);
-        header('Location: /catalog.php');
+        session_start();
+        $_SESSION['user_id'] = $result['id'];
+        header('Location: /catalog');
     }else{
         $errors['wrong_psw'] = 'Incorrect email or password!';
     }

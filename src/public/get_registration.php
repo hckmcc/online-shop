@@ -9,7 +9,7 @@
 <body>
 <div class="wrapper">
     <h2>Registration</h2>
-    <form action="handle_registration.php" method="POST">
+    <form action="/register" method="POST">
         <div class="input-box">
             <label style="color: red"><?php if (isset($errors['name'])){print_r($errors['name']);};?></label>
             <input type="text" placeholder="Enter your name" name="name" required>
@@ -30,7 +30,7 @@
             <input type="Submit" value="Register Now">
         </div>
         <div class="text">
-            <h3>Already have an account? <a href="./get_login.php">Log in now</a></h3>
+            <h3>Already have an account? <a href="/login">Log in now</a></h3>
         </div>
     </form>
     <style>@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');

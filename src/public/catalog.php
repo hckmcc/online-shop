@@ -1,6 +1,7 @@
 <?php
-if (!isset($_COOKIE['user_id'])){
-    header('Location: /get_login.php');
+session_start();
+if (!isset($_SESSION['user_id'])){
+    header('Location: /login');
 }else{
     $pdo= new PDO('pgsql:host=postgres;port=5432;dbname=mydb','user','pass');
 
@@ -17,11 +18,11 @@ if (!isset($_COOKIE['user_id'])){
         <div class="card text-center">
             <a href="#">
                 <div class="card-header">Hit!</div>
-                <img class="card-img-top" src="<?= $product['product_photo']; ?>" alt="Card image">
+                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="Card image">
                 <div class="card-body">
                     <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                    <a href="#"><h5 class="card-title"><?= $product['product_name'];?></h5></a>
-                    <div class="card-footer"><?= $product['product_price'];?>$</div>
+                    <a href="#"><h5 class="card-title"><?= $product['name'];?></h5></a>
+                    <div class="card-footer"><?= $product['price'];?>$</div>
                 </div>
             </a>
         </div>
