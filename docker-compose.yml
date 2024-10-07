@@ -14,6 +14,8 @@ services:
 
   postgres:
     image: postgres:13
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
     ports:
       - 54323:5432
     environment:

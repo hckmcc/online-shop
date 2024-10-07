@@ -1,15 +1,16 @@
 <?php
-if(!isset($_SESSION))
-{
-    session_start();
-}
+session_start();
 if (!isset($_SESSION['user_id'])){
     header('Location: /login');
 }else{
+    $user_id = $_SESSION['user_id'];
     $pdo= new PDO('pgsql:host=postgres;port=5432;dbname=mydb','user','pass');
 
-    $stmt = $pdo->prepare("SELECT * FROM products");
-    $stmt->execute();
+    $stmt = $pdo->prepare("SELECT p.name, p.category_name, p.price, p.photo, up.amount
+     FROM user_products up
+     JOIN products p ON up.product_id = p.id
+     WHERE up.user_id = :user_id; ");
+    $stmt->execute(['user_id' => $user_id]);
     $result = $stmt->fetchAll();
 };
 ?>
@@ -17,26 +18,22 @@ if (!isset($_SESSION['user_id'])){
 <?php require_once './static/html/header.html' ?>
 
 <div class="container">
-    <h3>Catalog</h3>
+    <h3>Cart</h3>
     <div class="card-deck">
         <?php foreach($result as $product): ?>
-        <div class="card text-center">
-            <a href="#">
-                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
-                <div class="card-body">
-                    <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                    <h5 class="card-title"><?= $product['name'];?></h5>
-                    <div class="card-footer"><?= $product['price'];?>$</div>
-                </div>
-            </a>
-            <form action="/add_product" method="POST">
-                <input type="hidden" name="product_id" value="<?= $product['id'];?>">
-                <label>
-                    <input type="number" name="amount" value="1" min="1" max="10" >
-                </label>
-                <input type="Submit" value="Add to cart">
-            </form>
-        </div>
+            <div class="card text-center">
+                <a href="#">
+                    <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                    <div class="card-body">
+                        <p class="card-text text-muted"><?= $product['category_name'];?></p>
+                        <h5 class="card-title"><?= $product['name'];?></h5>
+                        <div class="card-footer">
+                            <div><?= $product['price'];?>$</div>
+                            <div><?= $product['amount'];?>pcs</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         <?php endforeach; ?>
     </div>
 </div>
@@ -75,5 +72,7 @@ if (!isset($_SESSION['user_id'])){
         background-color: white;
         max-height: 20%;
         text-decoration: none;
+        display: flex;
+        justify-content: space-between;
     }
 </style>

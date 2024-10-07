@@ -1,0 +1,13 @@
+.cart_link{
+    text-decoration:none;
+    color: rgb(255, 255, 255);
+}
+.cart_link:hover{
+    color:rgba(255,179,0);
+}
+.logo_name a, .logo_name a:hover{
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration:none;
+}

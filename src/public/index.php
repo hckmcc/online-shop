@@ -11,7 +11,13 @@ if ($requestUri==='/login'){
 }elseif ($requestUri==='/catalog'){
     $pageArr=['post'=>null,'get'=>'./catalog.php'];
     getPage($pageArr, $requestMethod);
-}else{
+}elseif($requestUri==='/add_product'){
+    $pageArr=['post'=>'./handle_add_product.php','get'=>null];
+    getPage($pageArr, $requestMethod);
+}elseif($requestUri==='/cart'){
+    $pageArr=['post'=>null,'get'=>'./cart.php'];
+    getPage($pageArr, $requestMethod);
+} else{
     http_response_code(404);
 }
 
