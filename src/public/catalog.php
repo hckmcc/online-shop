@@ -1,19 +1,3 @@
-<?php
-if(!isset($_SESSION))
-{
-    session_start();
-}
-if (!isset($_SESSION['user_id'])){
-    header('Location: /login');
-}else{
-    $pdo= new PDO('pgsql:host=postgres;port=5432;dbname=mydb','user','pass');
-
-    $stmt = $pdo->prepare("SELECT * FROM products");
-    $stmt->execute();
-    $result = $stmt->fetchAll();
-};
-?>
-
 <?php require_once './static/html/header.html' ?>
 
 <div class="container">

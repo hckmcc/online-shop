@@ -1,20 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])){
-    header('Location: /login');
-}else{
-    $user_id = $_SESSION['user_id'];
-    $pdo= new PDO('pgsql:host=postgres;port=5432;dbname=mydb','user','pass');
-
-    $stmt = $pdo->prepare("SELECT p.name, p.category_name, p.price, p.photo, up.amount
-     FROM user_products up
-     JOIN products p ON up.product_id = p.id
-     WHERE up.user_id = :user_id; ");
-    $stmt->execute(['user_id' => $user_id]);
-    $result = $stmt->fetchAll();
-};
-?>
-
 <?php require_once './static/html/header.html' ?>
 
 <div class="container">
