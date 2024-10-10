@@ -1,7 +1,8 @@
 <?php
+require_once '../Model/UsersModel.php';
 class UserService
 {
-    public function login(PDO $pdo,string $email, string $password): bool|array
+    public function login(string $email, string $password): bool|array
     {
         if (empty($email)) {
             $errors['email'] = 'Enter email';
@@ -14,9 +15,8 @@ class UserService
         }
 
         if (empty($errors)){
-            $stmt = $pdo->prepare('SELECT * FROM users WHERE email= :email');
-            $stmt->execute(['email'=>$email]);
-            $user = $stmt->fetch();
+            $model = new UsersModel();
+            $user = $model->getUserByEmail($email);
             if (!empty($user) and password_verify($password, $user['password'])) {
                 session_start();
                 $_SESSION['user_id'] = $user['id'];
@@ -27,7 +27,7 @@ class UserService
         }
         return $errors;
     }
-    public function register(PDO $pdo, string $name, string $email, string $password, string $passwordRep): bool|array
+    public function register(string $name, string $email, string $password, string $passwordRep): bool|array
     {
         if (empty($name)) {
             $errors['name'] = 'Enter name';
@@ -53,9 +53,8 @@ class UserService
 
         if (empty($errors)) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-
-            $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
-            $stmt->execute(['name' => $name, 'email' => $email, 'password' => $hash]);
+            $model = new UsersModel();
+            $model->addUserToDB($name, $email, $hash);
             return true;
         }
         return $errors;

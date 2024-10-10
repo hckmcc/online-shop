@@ -1,4 +1,7 @@
 <?php
+require_once '../Controller/UserController.php';
+require_once '../Controller/ProductController.php';
+
 class Route
 {
     private string $route;
@@ -10,14 +13,14 @@ class Route
         $this->method = $method;
     }
 
-    public function getPage($pdo=null): void
+    public function getPage(): void
     {
         switch ($this->route) {
             case '/login':
-                $this->login($this->method, $pdo);
+                $this->login($this->method);
                 break;
             case '/register':
-                $this->register($this->method, $pdo);
+                $this->register($this->method);
                 break;
             case '/catalog':
                 $this->catalog($this->method);
@@ -26,45 +29,43 @@ class Route
                 $this->cart($this->method);
                 break;
             case '/add_product':
-                $this->addProduct($this->method, $pdo);
+                $this->addProduct($this->method);
                 break;
             default:
                 http_response_code(404);
         }
     }
 
-    private function login($requestMethod, $pdo): void
+    private function login($requestMethod): void
     {
         if ($requestMethod === 'POST'){
-            include './classes/user_class.php';
             $user = new UserService();
-            $login_response = $user->login($pdo, $_POST["email"], $_POST["psw"]);
+            $login_response = $user->login($_POST["email"], $_POST["psw"]);
             if (is_bool($login_response)){
                 header('Location: /catalog');
             }else{
                 $errors=$login_response;
-                require_once './get_login.php';
+                require_once '../View/get_login.php';
             };
         }elseif ($requestMethod === 'GET'){
-            require_once './get_login.php';
+            require_once '../View/get_login.php';
         }else{
             echo 'Incorrect method';
         }
     }
-    private function register($requestMethod, $pdo): void
+    private function register($requestMethod): void
     {
         if ($requestMethod === 'POST'){
-            include './classes/user_class.php';
             $user = new UserService();
-            $register_response = $user->register($pdo, $_POST["name"], $_POST["email"], $_POST["psw"], $_POST["rpt_psw"]);
+            $register_response = $user->register($_POST["name"], $_POST["email"], $_POST["psw"], $_POST["rpt_psw"]);
             if (is_bool($register_response)){
                 header('Location: /login');
             }else{
                 $errors=$register_response;
-                require_once './get_registration.php';
+                require_once '../View/get_registration.php';
             };
         }elseif ($requestMethod === 'GET'){
-            require_once './get_registration.php';
+            require_once '../View/get_registration.php';
         }else{
             echo 'Incorrect method';
         }
@@ -72,10 +73,9 @@ class Route
     private function catalog($requestMethod): void
     {
         if ($requestMethod === 'GET'){
-            include './classes/product_class.php';
             $product = new ProductService();
             $result = $product->getProductsInCatalog();
-            require_once './catalog.php';
+            require_once '../View/catalog.php';
         }else{
             echo 'Incorrect method';
         }
@@ -83,20 +83,18 @@ class Route
     private function cart($requestMethod): void
     {
         if ($requestMethod === 'GET'){
-            include './classes/product_class.php';
             $product = new ProductService();
             $result = $product->getProductsInCart();
-            require_once './cart.php';
+            require_once '../View/cart.php';
         }else{
             echo 'Incorrect method';
         }
     }
-    private function addProduct($requestMethod, $pdo): void
+    private function addProduct($requestMethod): void
     {
         if ($requestMethod === 'POST'){
-            include './classes/product_class.php';
             $product = new ProductService();
-            $result = $product->addProductToCart($pdo, $_POST["product_id"], $_POST["amount"]);
+            $result = $product->addProductToCart($_POST["product_id"], $_POST["amount"]);
             if($result){
                 header('Location: /catalog');
             }else{
