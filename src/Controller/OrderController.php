@@ -1,25 +1,39 @@
 <?php
-require_once '../Model/UserProductsModel.php';
-require_once '../Model/OrderModel.php';
-require_once '../Model/OrderProductsModel.php';
+require_once '../Model/Product.php';
+require_once '../Model/UserProduct.php';
+require_once '../Model/Order.php';
+require_once '../Model/OrderProduct.php';
 class OrderService
 {
+    private Product $productModel;
+    private Order $orderModel;
+    private OrderProduct $orderProductModel;
+    private UserProduct $userProductModel;
+    public function __construct()
+    {
+        $this->productModel = new Product();
+        $this->orderModel = new Order();
+        $this->orderProductModel = new OrderProduct();
+        $this->userProductModel = new UserProduct();
+    }
     public function getOrderPage():void
     {
         if (!isset($_SESSION)) {
         session_start();
-    }
+        }
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
         } else {
-            $user_id = $_SESSION['user_id'];
-            $user_products_model = new UserProductsModel();
-            $result = $user_products_model->getProductsInCart($user_id);
-            $total_price = $this->countCartSum($result);
+            $userId = $_SESSION['user_id'];
+            $productsInCart= $this->productModel->getProductsInCart($userId);
+            if(empty($productsInCart)){
+                header('Location: /catalog');
+            }
+            $totalPrice = $this->countCartSum($productsInCart);
             require_once '../View/order.php';
         }
     }
-    public function getOrderList():void
+    public function getUserOrderList():void
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -27,16 +41,16 @@ class OrderService
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
         } else {
-            $user_id = $_SESSION['user_id'];
-            $orders_model = new OrderModel();
-            $orders = $orders_model->getOrders($user_id);
-            foreach ($orders as $order) {
-
+            $userId = $_SESSION['user_id'];
+            $orders = $this->orderModel->getUserOrders($userId);
+            foreach ($orders as &$order) {
+                $order['products'] = $this->productModel->getProductsInOrder($order['id']);
             }
+            unset($order);
             require_once '../View/my_orders.php';
         }
     }
-    public function createOrder($name, $phone, $address, $comment):void
+    public function createOrder():void
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -45,19 +59,18 @@ class OrderService
             header('Location: /login');
             exit;
         } else {
-            $user_id = $_SESSION['user_id'];
-            $errors = $this->orderValidation($name, $phone, $address);
-            $user_products_model = new UserProductsModel();
-            $result = $user_products_model->getProductsInCart($user_id);
-            $order_model = new OrderModel();
-            $total_price = $this->countCartSum($result);
+            $userId = $_SESSION['user_id'];
+            $errors = $this->orderValidation($_POST);
+            $productsInCart = $this->productModel->getProductsInCart($userId);
+            $totalPrice = $this->countCartSum($productsInCart);
             if (empty($errors)) {
-                if (!empty($result)) {
-                    $order_id = $order_model->createOrder($user_id, $name, $phone, $address, $comment, $total_price);
-                    $products_in_order_model = new OrderProductsModel();
-                    foreach ($result as $product){
-                        $products_in_order_model->addProductsToOrder($order_id, $product['id'], $product['amount']);
+                if (!empty($productsInCart)) {
+                    $orderId = $this->orderModel->createOrder($userId, $_POST['name'], $_POST['phone'], $_POST['address'], $_POST['comment'], $totalPrice);
+                    foreach ($productsInCart as $product){
+                        $this->orderProductModel->addProductsToOrder($orderId, $product['id'], $product['amount'], $product['price']);
                     }
+                    $this->userProductModel->clearCart($userId);
+                    header('Location: /my_orders');
                 }else{
                     header('Location: /catalog');
                 }
@@ -65,7 +78,7 @@ class OrderService
             require_once '../View/order.php';
         }
     }
-    private function countCartSum(array $products): int
+    private function countCartSum(array $products): float
     {
         $price=0;
         foreach ($products as $product) {
@@ -73,22 +86,22 @@ class OrderService
         }
         return $price;
     }
-    private function orderValidation($name, $phone, $address):array
+    private function orderValidation(array $postData):array
     {
         $errors = array();
-        if (empty($name)) {
+        if (empty($postData['name'])) {
             $errors['name'] = 'Enter name';
-        }elseif(strlen($name)>50){
+        }elseif(strlen($postData['name'])>50){
             $errors['name'] = 'Name must contain less than 50 symbols';
         }
-        if (empty($phone)) {
+        if (empty($postData['phone'])) {
             $errors['phone'] = 'Enter phone';
-        }elseif(strlen($phone)!==12){
+        }elseif(strlen($postData['phone'])!==12){
             $errors['phone'] = 'Invalid phone number';
         }
-        if (empty($address)) {
+        if (empty($postData['address'])) {
             $errors['address'] = 'Enter address';
-        }elseif(strlen($address)>1000){
+        }elseif(strlen($postData['address'])>1000){
             $errors['address'] = 'Address must contain less than 1000 symbols';
         }
         return $errors;

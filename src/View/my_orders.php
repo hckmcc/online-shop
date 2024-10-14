@@ -1,10 +1,21 @@
 <?php require_once './static/html/header.html'; ?>
 <div class="main">
     <div class="container">
-        <h3>Order items</h3>
+        <h3>My orders</h3>
+        <?php foreach($orders as $order): ?>
         <div class="order">
+            <div class="orderInfo">
+                <label>Phone:</label>
+                <div><?= $order['phone']; ?></div>
+                <label>Address:</label>
+                <div><?= $order['address']; ?></div>
+                <label>Price:</label>
+                <div><?= $order['price']; ?></div>
+                <label>Comment:</label>
+                <div><?= $order['comment']; ?></div>
+            </div>
             <div class="card-deck">
-                <?php foreach($result as $product): ?>
+                <?php foreach($order['products'] as $product): ?>
                     <div class="card text-center">
                         <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
                         <div class="card-body">
@@ -12,15 +23,13 @@
                             <h5 class="card-title"><?= $product['name'];?></h5>
                         </div>
                         <div class="card_footer">
-                            <label>Price:</label>
-                            <div><?= $product['price'];?>$</div>
-                            <label>Quantity:</label>
-                            <div><?= $product['amount'];?>pcs</div>
+                            <div><?= $product['price'];?>$ x <?= $product['amount'];?></div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
+        <?php endforeach; ?>
     </div>
 </div>
 <style>
@@ -33,6 +42,17 @@
     .container{
         margin-top: 20px;
     }
+    .order{
+        margin-bottom: 80px;
+        border-block: #333333;
+    }
+    .orderInfo{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        font-weight: normal;
+        font-size: 16px;
+    }
     .card-deck{
         display: grid;
         grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
@@ -44,7 +64,9 @@
         text-decoration: none;
         color:black;
         margin-bottom: 10px;
-        height: 150px;
+        height: 100px;
+        border: none;
+        font-size: 8px;
     }
 
     .card-img-top{
@@ -59,7 +81,7 @@
 
     .card_footer{
         font-weight: normal;
-        font-size: 18px;
+        font-size: 12px;
         background-color: white;
         max-height: 100%;
         margin-top: 10px;
@@ -67,8 +89,10 @@
         margin-right: 10px;
         text-decoration: none;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         justify-content: space-between;
+        align-content: center;
     }
     .card_footer label{
         font-weight: bold;
@@ -166,12 +190,5 @@
     }
     form .text h3 a:hover{
         text-decoration: underline;
-    }
-    .orderInfo{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        font-weight: bold;
-        font-size: 18px;
     }
 </style>

@@ -3,7 +3,7 @@
 <div class="container">
     <h3>Order items</h3>
     <div class="card-deck">
-        <?php foreach($result as $product): ?>
+        <?php foreach($productsInCart as $product): ?>
             <div class="card text-center">
                 <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
                 <div class="card-body">
@@ -40,7 +40,7 @@
         </div>
         <div class="orderInfo">
             <p>Total price:</p>
-            <p><?php print_r($total_price) ?>$</p>
+            <p><?php print_r($totalPrice) ?>$</p>
         </div>
         <div class="input-box button">
             <input type="Submit" value="Place the order">

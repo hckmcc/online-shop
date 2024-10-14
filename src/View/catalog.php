@@ -3,7 +3,7 @@
 <div class="container">
     <h3>Catalog</h3>
     <div class="card-deck">
-        <?php foreach($result as $product): ?>
+        <?php foreach($products as $product): ?>
         <div class="card text-center">
             <a href="#">
                 <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
