@@ -1,5 +1,8 @@
 <?php
-require_once '../Model/projectPDO.php';
+namespace Model;
+use Model\projectPDO;
+use PDO;
+
 class Order
 {
     private PDO $pdo;
@@ -9,7 +12,7 @@ class Order
     }
     public function getUserOrders(int $userId): array|false
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id");
+        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id ORDER BY id DESC");
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchAll();
     }

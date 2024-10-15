@@ -3,19 +3,25 @@
     <div class="container">
         <h3>My orders</h3>
         <?php foreach($orders as $order): ?>
-        <div class="order">
+        <div class="orderHeader">Order ID: <?= $order['id']; ?></div>
+        <div class="order border border-2 rounded">
             <div class="orderInfo">
-                <label>Phone:</label>
-                <div><?= $order['phone']; ?></div>
-                <label>Address:</label>
-                <div><?= $order['address']; ?></div>
-                <label>Price:</label>
-                <div><?= $order['price']; ?></div>
-                <label>Comment:</label>
-                <div><?= $order['comment']; ?></div>
+                <div><label>Phone:</label>
+                    <div><?= $order['phone']; ?></div>
+                </div>
+                <div><label>Address:</label>
+                    <div><?= $order['address']; ?></div>
+                </div>
+                <div><label>Price:</label>
+                    <div><?= $order['price']; ?>$</div>
+                </div>
+                <div><label>Comment:</label>
+                    <div><?= $order['comment']; ?></div>
+                </div>
             </div>
             <div class="card-deck">
                 <?php foreach($order['products'] as $product): ?>
+                    <hr style="height: 2px"/>
                     <div class="card text-center">
                         <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
                         <div class="card-body">
@@ -44,18 +50,22 @@
     }
     .order{
         margin-bottom: 80px;
-        border-block: #333333;
+        padding: 10px;
+    }
+    .orderHeader{
+        font-size: 18px;
+        font-weight: bold;
     }
     .orderInfo{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
         font-weight: normal;
         font-size: 16px;
     }
     .card-deck{
         display: grid;
-        grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-rows: repeat(auto-fill, minmax(5px, 1fr));
         gap: 10px;
     }
     .card, .card a {
@@ -66,12 +76,12 @@
         margin-bottom: 10px;
         height: 100px;
         border: none;
-        font-size: 8px;
     }
 
     .card-img-top{
         max-height: 100%;
         max-width: 150px;
+        object-fit: contain;
         max-font-size: 100%;
     }
 
@@ -81,7 +91,6 @@
 
     .card_footer{
         font-weight: normal;
-        font-size: 12px;
         background-color: white;
         max-height: 100%;
         margin-top: 10px;
@@ -93,10 +102,6 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-content: center;
-    }
-    .card_footer label{
-        font-weight: bold;
-        font-size: 18px;
     }
     .checkoutForm{
         margin-top: 20px;

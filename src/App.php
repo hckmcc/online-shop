@@ -1,73 +1,81 @@
 <?php
-require_once '../Controller/UserController.php';
-require_once '../Controller/ProductController.php';
-require_once '../Controller/OrderController.php';
 class App
 {
     private array $routes=[
         '/login'=>[
             'GET'=>[
-                'object'=>'UserService',
+                'object'=>'Controller\UserController',
                 'method'=>'getLoginPage'
             ],
             'POST'=>[
-                'object'=>'UserService',
+                'object'=>'Controller\UserController',
                 'method'=>'login'
             ]
         ],
         '/register'=>[
             'GET'=>[
-                'object'=>'UserService',
+                'object'=>'Controller\UserController',
                 'method'=>'getRegistrationPage'
             ],
             'POST'=>[
-                'object'=>'UserService',
+                'object'=>'Controller\UserController',
                 'method'=>'register'
             ]
         ],
         '/catalog'=>[
             'GET'=>[
-                'object'=>'ProductService',
+                'object'=>'Controller\ProductController',
                 'method'=>'getProductsInCatalog'
             ]
         ],
         '/cart'=>[
             'GET'=>[
-                'object'=>'ProductService',
+                'object'=>'Controller\ProductController',
                 'method'=>'getProductsInCart'
             ]
         ],
         '/add_product'=>[
             'POST'=>[
-                'object'=>'ProductService',
+                'object'=>'Controller\ProductController',
                 'method'=>'addProductToCart'
             ]
         ],
         '/delete_product'=>[
             'POST'=>[
-                'object'=>'ProductService',
+                'object'=>'Controller\ProductController',
                 'method'=>'deleteProductFromCart'
             ]
         ],
         '/order'=>[
             'GET'=>[
-                'object'=>'OrderService',
+                'object'=>'Controller\OrderController',
                 'method'=>'getOrderPage'
             ],
             'POST'=>[
-                'object'=>'OrderService',
+                'object'=>'Controller\OrderController',
                 'method'=>'createOrder'
             ]
         ],
         '/my_orders'=>[
             'GET'=>[
-                'object'=>'OrderService',
+                'object'=>'Controller\OrderController',
                 'method'=>'getUserOrderList'
             ]
         ]
     ];
     public function run(): void
     {
+        $autoload = function(string $className){
+            $className = str_replace("\\","/",$className );
+            $path = "../$className.php";
+            if(file_exists($path)){
+                require_once $path;
+                return true;
+            }
+            return false;
+        };
+        spl_autoload_register($autoload);
+
         $requestUri = $_SERVER['REQUEST_URI'];
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         if(array_key_exists($requestUri, $this->routes)) {

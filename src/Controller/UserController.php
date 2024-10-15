@@ -1,6 +1,9 @@
 <?php
+namespace Controller;
+use Model\User;
+
 require_once '../Model/User.php';
-class UserService
+class UserController
 {
     private User $userModel;
     public function __construct()

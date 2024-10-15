@@ -75,6 +75,7 @@
     .card-img-top{
         max-height: 100%;
         max-width: 150px;
+        object-fit: contain;
         max-font-size: 100%;
     }
 

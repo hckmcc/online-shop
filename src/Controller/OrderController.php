@@ -1,9 +1,10 @@
 <?php
-require_once '../Model/Product.php';
-require_once '../Model/UserProduct.php';
-require_once '../Model/Order.php';
-require_once '../Model/OrderProduct.php';
-class OrderService
+namespace Controller;
+use Model\Order;
+use Model\Product;
+use Model\UserProduct;
+use Model\OrderProduct;
+class OrderController
 {
     private Product $productModel;
     private Order $orderModel;

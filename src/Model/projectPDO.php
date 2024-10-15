@@ -1,4 +1,7 @@
 <?php
+namespace Model;
+use PDO;
+
 class projectPDO
 {
     public function returnPDO():PDO

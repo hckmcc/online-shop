@@ -1,5 +1,7 @@
 <?php
-require_once '../Model/projectPDO.php';
+namespace Model;
+use Model\projectPDO;
+use PDO;
 class User
 {
     private PDO $pdo;
