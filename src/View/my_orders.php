@@ -1,52 +1,76 @@
-<?php require_once './static/html/header.html'; ?>
+<?php require_once './static/html/header.html';
+if(empty($orders)){
+    $ordersEmpty='d-block';
+    $ordersFilled='d-none';
+}else{
+    $ordersEmpty='d-none';
+    $ordersFilled='d-block';
+}
+?>
 <div class="main">
     <div class="container">
-        <h3>My orders</h3>
-        <?php foreach($orders as $order): ?>
-        <div class="orderHeader">Order ID: <?= $order['id']; ?></div>
-        <div class="order border border-2 rounded">
-            <div class="orderInfo">
-                <div><label>Phone:</label>
-                    <div><?= $order['phone']; ?></div>
+        <h3 class="<?php echo $ordersFilled ?>">My orders</h3>
+        <div class="container space-2 space-lg-3 <?php echo $ordersEmpty ?>">
+            <div class="w-md-80 w-lg-50 text-center mx-md-auto">
+                <figure id="iconEmptyCart" class="svg-preloader ie-height-111 max-width-15 mx-auto mb-3">
+                    <img class="js-svg-injector" src="https://htmlstream.com/preview/front-v2.9.0/assets/svg/icons/icon-66.svg" alt="SVG"
+                         data-parent="#iconEmptyCart">
+                </figure>
+                <div class="mb-5">
+                    <h1 class="h3 font-weight-medium">You don't have any orders yet</h1>
                 </div>
-                <div><label>Address:</label>
-                    <div><?= $order['address']; ?></div>
-                </div>
-                <div><label>Price:</label>
-                    <div><?= $order['price']; ?>$</div>
-                </div>
-                <div><label>Comment:</label>
-                    <div><?= $order['comment']; ?></div>
-                </div>
-            </div>
-            <div class="card-deck">
-                <?php foreach($order['products'] as $product): ?>
-                    <hr style="height: 2px"/>
-                    <div class="card text-center">
-                        <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
-                        <div class="card-body">
-                            <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                            <h5 class="card-title"><?= $product['name'];?></h5>
-                        </div>
-                        <div class="card_footer">
-                            <div><?= $product['price'];?>$ x <?= $product['amount'];?></div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                <a class="btn btn-primary btn-pill transition-3d-hover px-5" href="./catalog">Start Shopping</a>
             </div>
         </div>
-        <?php endforeach; ?>
+        <div class="<?php echo $ordersFilled ?>"><?php foreach($orders as $order): ?>
+                <div class="orderHeader">Order ID: <?= $order['id']; ?></div>
+                <div class="order border border-2 rounded">
+                    <div class="orderInfo">
+                        <div><label>Phone:</label>
+                            <div><?= $order['phone']; ?></div>
+                        </div>
+                        <div><label>Address:</label>
+                            <div><?= $order['address']; ?></div>
+                        </div>
+                        <div><label>Price:</label>
+                            <div><?= $order['price']; ?>$</div>
+                        </div>
+                        <div><label>Comment:</label>
+                            <div><?= $order['comment']; ?></div>
+                        </div>
+                    </div>
+                    <div class="card-deck">
+                        <?php foreach($order['products'] as $product): ?>
+                            <hr style="height: 2px"/>
+                            <div class="card text-center">
+                                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                                <div class="card-body">
+                                    <p class="card-text text-muted"><?= $product['category_name'];?></p>
+                                    <h5 class="card-title"><?= $product['name'];?></h5>
+                                </div>
+                                <div class="card_footer">
+                                    <div><?= $product['price'];?>$ x <?= $product['amount'];?></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 <style>
     .main{
         display: flex;
         flex-direction: row;
-        margin-left: 8%;
+        margin-left: 3%;
         margin-right: 3%;
     }
     .container{
         margin-top: 20px;
+    }
+    .svg-preloader{
+        max-width: 7rem;
     }
     .order{
         margin-bottom: 80px;

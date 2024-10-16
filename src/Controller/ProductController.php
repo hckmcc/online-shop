@@ -2,15 +2,18 @@
 namespace Controller;
 use Model\Product;
 use Model\UserProduct;
+use Model\User;
 
 class ProductController
 {
     private Product $productModel;
     private UserProduct $userProductModel;
+    private User $userModel;
     public function __construct()
     {
         $this->productModel = new Product();
         $this->userProductModel = new UserProduct();
+        $this->userModel = new User();
     }
     public function getProductsInCatalog():void
     {
@@ -22,6 +25,7 @@ class ProductController
             exit;
         } else {
             $products = $this->productModel->getProducts();
+            $user= $this->userModel->getUserById($_SESSION['user_id']);
             require_once '../View/catalog.php';
         }
     }
@@ -36,6 +40,7 @@ class ProductController
         } else {
             $userId = $_SESSION['user_id'];
             $productsInCart = $this->productModel->getProductsInCart($userId);
+            $user= $this->userModel->getUserById($userId);
             require_once '../View/cart.php';
         }
     }

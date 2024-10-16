@@ -4,18 +4,21 @@ use Model\Order;
 use Model\Product;
 use Model\UserProduct;
 use Model\OrderProduct;
+use Model\User;
 class OrderController
 {
     private Product $productModel;
     private Order $orderModel;
     private OrderProduct $orderProductModel;
     private UserProduct $userProductModel;
+    private User $userModel;
     public function __construct()
     {
         $this->productModel = new Product();
         $this->orderModel = new Order();
         $this->orderProductModel = new OrderProduct();
         $this->userProductModel = new UserProduct();
+        $this->userModel = new User();
     }
     public function getOrderPage():void
     {
@@ -31,6 +34,7 @@ class OrderController
                 header('Location: /catalog');
             }
             $totalPrice = $this->countCartSum($productsInCart);
+            $user= $this->userModel->getUserById($userId);
             require_once '../View/order.php';
         }
     }
@@ -48,6 +52,7 @@ class OrderController
                 $order['products'] = $this->productModel->getProductsInOrder($order['id']);
             }
             unset($order);
+            $user= $this->userModel->getUserById($userId);
             require_once '../View/my_orders.php';
         }
     }
@@ -76,6 +81,7 @@ class OrderController
                     header('Location: /catalog');
                 }
             }
+            $user= $this->userModel->getUserById($userId);
             require_once '../View/order.php';
         }
     }

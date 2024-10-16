@@ -46,6 +46,14 @@ class UserController
     {
         require_once '../View/get_registration.php';
     }
+    public function logout(): void
+    {
+        session_start();
+        if(isset($_SESSION['user_id'])){
+            unset($_SESSION['user_id']);
+        }
+        header('Location: /login');
+    }
     private function loginValidation(array $postData): array
     {
         $errors = [];

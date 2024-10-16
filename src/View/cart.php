@@ -60,7 +60,7 @@ $total_price=0;
         display: flex;
         flex-direction: row;
         margin-left: 8%;
-        margin-right: 3%;
+        margin-right: 8%;
     }
     .container{
         margin-top: 20px;

@@ -1,14 +1,7 @@
 <?php
 namespace Model;
-use Model\projectPDO;
-use PDO;
-class Product
+class Product extends Model
 {
-    private PDO $pdo;
-    public function __construct(){
-        $pdo= new projectPDO();
-        $this->pdo = $pdo->returnPDO();
-    }
     public function getProducts(): array|false
     {
         $stmt = $this->pdo->prepare("SELECT * FROM products");

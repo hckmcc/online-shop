@@ -1,15 +1,7 @@
 <?php
 namespace Model;
-use Model\projectPDO;
-use PDO;
-
-class Order
+class Order extends Model
 {
-    private PDO $pdo;
-    public function __construct(){
-        $pdo= new projectPDO();
-        $this->pdo = $pdo->returnPDO();
-    }
     public function getUserOrders(int $userId): array|false
     {
         $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id ORDER BY id DESC");

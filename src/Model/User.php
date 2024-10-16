@@ -1,13 +1,12 @@
 <?php
 namespace Model;
-use Model\projectPDO;
-use PDO;
-class User
+class User extends Model
 {
-    private PDO $pdo;
-    public function __construct(){
-        $pdo= new projectPDO();
-        $this->pdo = $pdo->returnPDO();
+    public function getUserById(int $id): array|false
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE id= :id');
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
     public function getUserByEmail(string $email): array|false
     {

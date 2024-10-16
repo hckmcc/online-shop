@@ -1,14 +1,7 @@
 <?php
 namespace Model;
-use Model\projectPDO;
-use PDO;
-class UserProduct
+class UserProduct extends Model
 {
-    private PDO $pdo;
-    public function __construct(){
-        $pdo= new projectPDO();
-        $this->pdo = $pdo->returnPDO();
-    }
     public function addProductToCart(int $userId, int $productId, int $amount): void
     {
         $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
