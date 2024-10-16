@@ -24,7 +24,7 @@
         </div>
         <div class="input-box">
             <label style="color: red"><?php if (isset($errors['psw_rpt'])){print_r($errors['psw_rpt']);};?></label>
-            <input type="password" placeholder="Confirm password" name="rpt_psw" required>
+            <input type="password" placeholder="Confirm password" name="psw_rpt" required>
         </div>
         <div class="input-box button">
             <input type="Submit" value="Register Now">
