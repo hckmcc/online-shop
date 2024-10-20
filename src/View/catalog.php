@@ -3,18 +3,19 @@
 <div class="container">
     <h3>Catalog</h3>
     <div class="card-deck">
+        <?php if(!is_null($products)): ?>
         <?php foreach($products as $product): ?>
         <div class="card text-center">
             <a href="#">
-                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                <img class="card-img-top" src="<?= $product->getPhoto(); ?>" alt="">
                 <div class="card-body">
-                    <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                    <h5 class="card-title"><?= $product['name'];?></h5>
-                    <div class="card-footer"><?= $product['price'];?>$</div>
+                    <p class="card-text text-muted"><?= $product->getCategoryName();?></p>
+                    <h5 class="card-title"><?= $product->getName();?></h5>
+                    <div class="card-footer"><?= $product->getPrice();?>$</div>
                 </div>
             </a>
             <form action="/add_product" method="POST">
-                <input type="hidden" name="product_id" value="<?= $product['id'];?>">
+                <input type="hidden" name="product_id" value="<?= $product->getId();?>">
                 <label>
                     <input type="number" name="amount" value="1" min="1" max="10" >
                 </label>
@@ -22,6 +23,7 @@
             </form>
         </div>
         <?php endforeach; ?>
+        <?php endif;?>
     </div>
 </div>
 <style>

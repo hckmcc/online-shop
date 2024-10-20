@@ -4,7 +4,7 @@ namespace Core;
 
 class Autoload
 {
-    public static function register(string $rootPath)
+    public static function register(string $rootPath):void
     {
         $autoload = function (string $className) use ($rootPath) {
             $className = str_replace("\\", "/", $className);

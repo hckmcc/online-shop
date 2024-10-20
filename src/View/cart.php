@@ -1,5 +1,5 @@
 <?php require_once './static/html/header.html';
-if(empty($productsInCart)){
+if(is_null($productsInCart)){
     $cartEmpty='d-block';
     $cartFilled='d-none';
 }else{
@@ -25,26 +25,28 @@ $total_price=0;
             </div>
         </div>
         <div class="card-deck">
+            <?php if(!is_null($productsInCart)): ?>
             <?php foreach($productsInCart as $product): ?>
                 <div class="card text-center">
                     <a href="#">
-                        <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                        <img class="card-img-top" src="<?= $product->getProductPhoto(); ?>" alt="">
                         <div class="card-body">
-                            <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                            <h5 class="card-title"><?= $product['name'];?></h5>
+                            <p class="card-text text-muted"><?= $product->getProductCategoryName();?></p>
+                            <h5 class="card-title"><?= $product->getProductName();?></h5>
                             <div class="card-footer">
-                                <div><?= $product['price'];?>$</div>
-                                <div><?= $product['amount'];?>pcs</div>
+                                <div><?= $product->getProductPrice();?>$</div>
+                                <div><?= $product->getProductAmount();?>pcs</div>
                             </div>
                         </div>
                     </a>
                     <form action="/delete_product" method="POST">
-                        <input type="hidden" name="product_id" value="<?= $product['id'];?>">
+                        <input type="hidden" name="product_id" value="<?= $product->getProductId();?>">
                         <input class="btn btn-danger btn-pill transition-3d-hover mx-5" type="Submit" value="Remove">
                     </form>
                 </div>
-                <span hidden><?= $total_price+=$product['amount']*$product['price']?></span>
+                <span hidden><?= $total_price+=$product->getProductAmount()*$product->getProductPrice();?></span>
             <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
     <div class="checkoutForm <?php echo $cartFilled ?>">

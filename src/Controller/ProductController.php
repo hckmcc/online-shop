@@ -3,6 +3,8 @@ namespace Controller;
 use Model\Product;
 use Model\UserProduct;
 use Model\User;
+use Request\AddProductRequest;
+use Request\DeleteProductRequest;
 
 class ProductController
 {
@@ -39,13 +41,13 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            $productsInCart = $this->productModel->getProductsInCart($userId);
+            $productsInCart = $this->userProductModel->getProductsInCart($userId);
             $user= $this->userModel->getUserById($userId);
             require_once '../View/cart.php';
         }
     }
 
-    public function addProductToCart():void
+    public function addProductToCart(AddProductRequest $request):void
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -54,9 +56,9 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            if (!empty($_POST['product_id'])) {
-                $product = $this->productModel->getOneProduct($_POST['product_id']);
-                if (!$product) {
+            if (!empty($request->getProductId())) {
+                $product = $this->productModel->getOneProduct($request->getProductId());
+                if (is_null($product)) {
                     http_response_code(400);
                     exit;
                 }
@@ -64,19 +66,21 @@ class ProductController
                 http_response_code(400);
                 exit;
             }
-            if (empty($_POST['amount'])) {
+            if (!is_int(intval($request->getProductAmount()))) {
                 $amount = 1;
+            }else{
+                $amount = $request->getProductAmount();
             }
-            $productInCart = $this->userProductModel->getUserProductInCart($userId, $_POST['product_id'],);
-            if (!$productInCart) {
-                $this->userProductModel->addProductToCart($userId, $_POST['product_id'], $_POST['amount']);
+            $isProductInCart = $this->userProductModel->getUserProductInCart($userId, $request->getProductId());
+            if (!$isProductInCart) {
+                $this->userProductModel->addProductToCart($userId, $request->getProductId(), $amount);
             } else {
-                $this->userProductModel->updateAmountInCart($userId, $_POST['product_id'], $_POST['amount']);
+                $this->userProductModel->updateAmountInCart($userId, $request->getProductId(), $amount);
             }
             header('Location: /catalog');
         }
     }
-    public function deleteProductFromCart():void
+    public function deleteProductFromCart(DeleteProductRequest $request):void
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -85,11 +89,11 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            if (empty($_POST['product_id'])) {
+            if (empty($request->getProductId())) {
                 http_response_code(400);
                 exit;
             }
-            $this->userProductModel->deleteProductFromCart($userId, $_POST['product_id']);
+            $this->userProductModel->deleteProductFromCart($userId, $request->getProductId());
             header('Location: /cart');
         }
     }

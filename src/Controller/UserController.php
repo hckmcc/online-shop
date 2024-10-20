@@ -1,6 +1,8 @@
 <?php
 namespace Controller;
 use Model\User;
+use Request\LoginRequest;
+use Request\RegisterRequest;
 
 require_once '../Model/User.php';
 class UserController
@@ -10,15 +12,15 @@ class UserController
     {
         $this->userModel = new User();
     }
-    public function login(): void
+    public function login(LoginRequest $request): void
     {
-        $errors = $this->loginValidation($_POST);
+        $errors = $request->validation();
 
         if (empty($errors)){
-            $user = $this->userModel->getUserByEmail($_POST['email']);
-            if (!empty($user) and password_verify($_POST['psw'], $user['password'])) {
+            $user = $this->userModel->getUserByEmail($request->getEmail());
+            if (!is_null($user) and password_verify($request->getPassword(), $user->getPassword())) {
                 session_start();
-                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_id'] = $user->getId();
                 header('Location: /catalog');
                 exit;
             }else{
@@ -27,23 +29,15 @@ class UserController
         }
         require_once '../View/get_login.php';
     }
-    public function register(): void
+    public function register(RegisterRequest $request): void
     {
-        $errors = $this->registerValidation($_POST);
+        $errors = $request->validation($this->userModel);
         if (empty($errors)) {
-            $hash = password_hash($_POST['psw'], PASSWORD_DEFAULT);
-            $this->userModel->addUserToDB($_POST['name'], $_POST['email'], $hash);
+            $hash = password_hash($request->getPassword(), PASSWORD_DEFAULT);
+            $this->userModel->addUserToDB($request->getName(), $request->getEmail(), $hash);
             header('Location: /login');
             exit;
         }
-        require_once '../View/get_registration.php';
-    }
-    public function getLoginPage(): void
-    {
-        require_once '../View/get_login.php';
-    }
-    public function getRegistrationPage(): void
-    {
         require_once '../View/get_registration.php';
     }
     public function logout(): void
@@ -54,42 +48,12 @@ class UserController
         }
         header('Location: /login');
     }
-    private function loginValidation(array $postData): array
+    public function getLoginPage(): void
     {
-        $errors = [];
-        if (empty($postData['email'])) {
-            $errors['email'] = 'Enter email';
-        }elseif(!filter_var($postData['email'], FILTER_VALIDATE_EMAIL)){
-            $errors['email'] = 'Invalid email!';
-        }
-        if (empty($postData['psw'])) {
-            $errors['psw'] = 'Enter password';
-        }
-        return $errors;
+        require_once '../View/get_login.php';
     }
-    private function registerValidation(array $postData):array
+    public function getRegistrationPage(): void
     {
-        $errors = [];
-        if (empty($postData['name'])) {
-            $errors['name'] = 'Enter name';
-        }elseif(strlen($postData['name'])>50){
-            $errors['name'] = 'Name must contain less than 50 symbols';
-        }
-        if (empty($postData['email'])) {
-            $errors['email'] = 'Enter email';
-        }elseif(!filter_var($postData['email'], FILTER_VALIDATE_EMAIL)){
-            $errors['email'] = 'Invalid email!';
-        }elseif($this->userModel->getUserByEmail($postData['email'])){
-            $errors['email'] = 'Email already exists!';
-        }
-        if (empty($postData['psw'])) {
-            $errors['psw'] = 'Enter password';
-        }elseif(!preg_match("/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*\d)\S*$/", $postData['psw'])){
-            $errors['psw'] = 'Incorrect password';
-        }
-        if ($postData['psw'] !== $postData['psw_rpt']) {
-            $errors['psw_rpt'] = 'Passwords don\'t match!';
-        }
-        return $errors;
+        require_once '../View/get_registration.php';
     }
 }

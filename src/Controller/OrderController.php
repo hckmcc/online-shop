@@ -5,16 +5,16 @@ use Model\Product;
 use Model\UserProduct;
 use Model\OrderProduct;
 use Model\User;
+use Request\OrderRequest;
+
 class OrderController
 {
-    private Product $productModel;
     private Order $orderModel;
     private OrderProduct $orderProductModel;
     private UserProduct $userProductModel;
     private User $userModel;
     public function __construct()
     {
-        $this->productModel = new Product();
         $this->orderModel = new Order();
         $this->orderProductModel = new OrderProduct();
         $this->userProductModel = new UserProduct();
@@ -29,8 +29,8 @@ class OrderController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            $productsInCart= $this->productModel->getProductsInCart($userId);
-            if(empty($productsInCart)){
+            $productsInCart= $this->userProductModel->getProductsInCart($userId);
+            if(is_null($productsInCart)){
                 header('Location: /catalog');
             }
             $totalPrice = $this->countCartSum($productsInCart);
@@ -48,15 +48,17 @@ class OrderController
         } else {
             $userId = $_SESSION['user_id'];
             $orders = $this->orderModel->getUserOrders($userId);
-            foreach ($orders as &$order) {
-                $order['products'] = $this->productModel->getProductsInOrder($order['id']);
+            if(!is_null($orders)){
+                foreach ($orders as &$order) {
+                    $order->setProducts($this->orderProductModel->getProductsInOrder($order->getId()));
+                }
+                unset($order);
             }
-            unset($order);
             $user= $this->userModel->getUserById($userId);
             require_once '../View/my_orders.php';
         }
     }
-    public function createOrder():void
+    public function createOrder(OrderRequest $request):void
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -66,14 +68,14 @@ class OrderController
             exit;
         } else {
             $userId = $_SESSION['user_id'];
-            $errors = $this->orderValidation($_POST);
-            $productsInCart = $this->productModel->getProductsInCart($userId);
+            $errors = $request->validation();
+            $productsInCart = $this->userProductModel->getProductsInCart($userId);
             $totalPrice = $this->countCartSum($productsInCart);
             if (empty($errors)) {
-                if (!empty($productsInCart)) {
-                    $orderId = $this->orderModel->createOrder($userId, $_POST['name'], $_POST['phone'], $_POST['address'], $_POST['comment'], $totalPrice);
+                if (!is_null($productsInCart)) {
+                    $orderId = $this->orderModel->createOrder($userId, $request->getName(), $request->getPhone(), $request->getAddress(), $request->getComment(), $totalPrice);
                     foreach ($productsInCart as $product){
-                        $this->orderProductModel->addProductsToOrder($orderId, $product['id'], $product['amount'], $product['price']);
+                        $this->orderProductModel->addProductsToOrder($orderId, $product->getProductId(), $product->getProductAmount(), $product->getProductPrice());
                     }
                     $this->userProductModel->clearCart($userId);
                     header('Location: /my_orders');
@@ -89,28 +91,8 @@ class OrderController
     {
         $price=0;
         foreach ($products as $product) {
-            $price += $product['price']*$product['amount'];
+            $price += $product->getProductPrice()*$product->getProductAmount();
         }
         return $price;
-    }
-    private function orderValidation(array $postData):array
-    {
-        $errors = array();
-        if (empty($postData['name'])) {
-            $errors['name'] = 'Enter name';
-        }elseif(strlen($postData['name'])>50){
-            $errors['name'] = 'Name must contain less than 50 symbols';
-        }
-        if (empty($postData['phone'])) {
-            $errors['phone'] = 'Enter phone';
-        }elseif(strlen($postData['phone'])!==12){
-            $errors['phone'] = 'Invalid phone number';
-        }
-        if (empty($postData['address'])) {
-            $errors['address'] = 'Enter address';
-        }elseif(strlen($postData['address'])>1000){
-            $errors['address'] = 'Address must contain less than 1000 symbols';
-        }
-        return $errors;
     }
 }

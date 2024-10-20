@@ -1,5 +1,5 @@
 <?php require_once './static/html/header.html';
-if(empty($orders)){
+if(is_null($orders)){
     $ordersEmpty='d-block';
     $ordersFilled='d-none';
 }else{
@@ -23,33 +23,33 @@ if(empty($orders)){
             </div>
         </div>
         <div class="<?php echo $ordersFilled ?>"><?php foreach($orders as $order): ?>
-                <div class="orderHeader">Order ID: <?= $order['id']; ?></div>
+                <div class="orderHeader">Order ID: <?= $order->getId(); ?></div>
                 <div class="order border border-2 rounded">
                     <div class="orderInfo">
                         <div><label>Phone:</label>
-                            <div><?= $order['phone']; ?></div>
+                            <div><?= $order->getPhone(); ?></div>
                         </div>
                         <div><label>Address:</label>
-                            <div><?= $order['address']; ?></div>
+                            <div><?= $order->getAddress(); ?></div>
                         </div>
                         <div><label>Price:</label>
-                            <div><?= $order['price']; ?>$</div>
+                            <div><?= $order->getPrice(); ?>$</div>
                         </div>
                         <div><label>Comment:</label>
-                            <div><?= $order['comment']; ?></div>
+                            <div><?= $order->getComment(); ?></div>
                         </div>
                     </div>
                     <div class="card-deck">
-                        <?php foreach($order['products'] as $product): ?>
+                        <?php foreach($order->getProducts() as $product): ?>
                             <hr style="height: 2px"/>
                             <div class="card text-center">
-                                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                                <img class="card-img-top" src="<?= $product->getProductPhoto(); ?>" alt="">
                                 <div class="card-body">
-                                    <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                                    <h5 class="card-title"><?= $product['name'];?></h5>
+                                    <p class="card-text text-muted"><?= $product->getProductCategoryName();?></p>
+                                    <h5 class="card-title"><?= $product->getProductName();?></h5>
                                 </div>
                                 <div class="card_footer">
-                                    <div><?= $product['price'];?>$ x <?= $product['amount'];?></div>
+                                    <div><?= $product->getProductPrice();?>$ x <?= $product->getProductAmount();?></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>

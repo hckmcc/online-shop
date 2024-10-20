@@ -3,21 +3,23 @@
 <div class="container">
     <h3>Order items</h3>
     <div class="card-deck">
+        <?php if(!is_null($productsInCart)): ?>
         <?php foreach($productsInCart as $product): ?>
             <div class="card text-center">
-                <img class="card-img-top" src="<?= $product['photo']; ?>" alt="">
+                <img class="card-img-top" src="<?= $product->getProductPhoto(); ?>" alt="">
                 <div class="card-body">
-                    <p class="card-text text-muted"><?= $product['category_name'];?></p>
-                    <h5 class="card-title"><?= $product['name'];?></h5>
+                    <p class="card-text text-muted"><?= $product->getProductCategoryName();?></p>
+                    <h5 class="card-title"><?= $product->getProductName();?></h5>
                 </div>
                 <div class="card_footer">
                     <label>Price:</label>
-                    <div><?= $product['price'];?>$</div>
+                    <div><?= $product->getProductPrice();?>$</div>
                     <label>Quantity:</label>
-                    <div><?= $product['amount'];?>pcs</div>
+                    <div><?= $product->getProductAmount();?>pcs</div>
                 </div>
             </div>
         <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 <div class="checkoutForm">
