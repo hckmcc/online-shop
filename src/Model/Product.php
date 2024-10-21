@@ -60,12 +60,12 @@ class Product extends Model
         return $this->photo;
     }
 
-    private function setProperties(array $stmt): void
+    public function setProperties(array $product): void
     {
-        $this->id = $stmt['id'];
-        $this->name = $stmt['name'];
-        $this->categoryName = $stmt['category_name'];
-        $this->price = $stmt['price'];
-        $this->photo = $stmt['photo'];
+        $this->id = $product['id'];
+        $this->name = $product['name'];
+        $this->categoryName = $product['category_name'];
+        $this->price = $product['price'];
+        $this->photo = $product['photo'];
     }
 }

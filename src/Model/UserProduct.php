@@ -2,15 +2,11 @@
 namespace Model;
 class UserProduct extends Model
 {
-    private int $productId;
-    private string $productName;
-    private string $productCategoryName;
-    private float $productPrice;
-    private string $productPhoto;
+    private Product $product;
     private int $productAmount;
     public function getProductsInCart(int $userId): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT p.id, p.name, p.category_name, p.price, p.photo, up.amount
+        $stmt = $this->pdo->prepare("SELECT *
                          FROM user_products up
                          JOIN products p ON up.product_id = p.id
                          WHERE up.user_id = :user_id; ");
@@ -59,27 +55,27 @@ class UserProduct extends Model
 
     public function getProductId(): int
     {
-        return $this->productId;
+        return $this->product->getId();
     }
 
     public function getProductName(): string
     {
-        return $this->productName;
+        return $this->product->getName();
     }
 
     public function getProductCategoryName(): string
     {
-        return $this->productCategoryName;
+        return $this->product->getCategoryName();
     }
 
     public function getProductPrice(): float
     {
-        return $this->productPrice;
+        return $this->product->getPrice();
     }
 
     public function getProductPhoto(): string
     {
-        return $this->productPhoto;
+        return $this->product->getPhoto();
     }
 
     public function getProductAmount(): int
@@ -87,13 +83,10 @@ class UserProduct extends Model
         return $this->productAmount;
     }
 
-    private function setProperties(array $stmt): void
+    private function setProperties(array $userProducts): void
     {
-        $this->productId = $stmt['id'];
-        $this->productName = $stmt['name'];
-        $this->productCategoryName = $stmt['category_name'];
-        $this->productPhoto = $stmt['photo'];
-        $this->productPrice = $stmt['price'];
-        $this->productAmount = $stmt['amount'];
+        $this->product = new Product();
+        $this->product->setProperties($userProducts);
+        $this->productAmount = $userProducts['amount'];
     }
 }

@@ -56,9 +56,9 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            if (!empty($request->getProductId())) {
-                $product = $this->productModel->getOneProduct($request->getProductId());
-                if (is_null($product)) {
+            if (!empty(intval($request->getProductId()))) {
+                $product = $this->productModel->getOneProduct(intval($request->getProductId()));
+                if (empty($product)) {
                     http_response_code(400);
                     exit;
                 }
@@ -66,7 +66,7 @@ class ProductController
                 http_response_code(400);
                 exit;
             }
-            if (!is_int(intval($request->getProductAmount()))) {
+            if (!is_int(intval($request->getProductAmount())) or intval($request->getProductAmount())===0) {
                 $amount = 1;
             }else{
                 $amount = $request->getProductAmount();
@@ -89,11 +89,11 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $_SESSION['user_id'];
-            if (empty($request->getProductId())) {
+            if (empty(intval($request->getProductId()))) {
                 http_response_code(400);
                 exit;
             }
-            $this->userProductModel->deleteProductFromCart($userId, $request->getProductId());
+            $this->userProductModel->deleteProductFromCart($userId, intval($request->getProductId()));
             header('Location: /cart');
         }
     }

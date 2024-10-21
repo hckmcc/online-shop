@@ -14,14 +14,8 @@ class App
             if (array_key_exists($requestMethod, $this->routes[$requestUri])) {
                 $class = new $this->routes[$requestUri][$requestMethod]['class'];
                 $method = $this->routes[$requestUri][$requestMethod]['method'];
-                if ($requestMethod==="POST") {
-                    $requestUriWords = substr($requestUri, 1);
-                    $requestUriWords = explode("_", $requestUriWords);
-                    $requestClass="";
-                    foreach ($requestUriWords as $word) {
-                        $requestClass = $requestClass.ucfirst($word);
-                    }
-                    $requestClass = "Request\\".$requestClass."Request";
+                $requestClass = $this->routes[$requestUri][$requestMethod]['request'];
+                if (!empty($requestClass)){
                     $request = new $requestClass($requestUri, $requestMethod, $_POST);
                     $class->$method($request);
                 }else{
@@ -34,9 +28,10 @@ class App
             http_response_code(404);
         }
     }
-    public function addRoute(string $routeUri, string $routeMethod, string $class, string $classMethod): void
+    public function addRoute(string $routeUri, string $routeMethod, string $class, string $classMethod, string $requestClass=null): void
     {
         $this->routes[$routeUri][$routeMethod]['class']=$class;
         $this->routes[$routeUri][$routeMethod]['method']=$classMethod;
+        $this->routes[$routeUri][$routeMethod]['request']=$requestClass;
     }
 }

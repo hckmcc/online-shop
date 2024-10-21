@@ -1,11 +1,13 @@
 <?php
 namespace Controller;
+use DTO\CreateOrderDTO;
 use Model\Order;
 use Model\Product;
 use Model\UserProduct;
 use Model\OrderProduct;
 use Model\User;
 use Request\OrderRequest;
+use Service\OrderService;
 
 class OrderController
 {
@@ -13,12 +15,14 @@ class OrderController
     private OrderProduct $orderProductModel;
     private UserProduct $userProductModel;
     private User $userModel;
+    private OrderService $orderService;
     public function __construct()
     {
         $this->orderModel = new Order();
         $this->orderProductModel = new OrderProduct();
         $this->userProductModel = new UserProduct();
         $this->userModel = new User();
+        $this->orderService = new OrderService();
     }
     public function getOrderPage():void
     {
@@ -72,12 +76,9 @@ class OrderController
             $productsInCart = $this->userProductModel->getProductsInCart($userId);
             $totalPrice = $this->countCartSum($productsInCart);
             if (empty($errors)) {
-                if (!is_null($productsInCart)) {
-                    $orderId = $this->orderModel->createOrder($userId, $request->getName(), $request->getPhone(), $request->getAddress(), $request->getComment(), $totalPrice);
-                    foreach ($productsInCart as $product){
-                        $this->orderProductModel->addProductsToOrder($orderId, $product->getProductId(), $product->getProductAmount(), $product->getProductPrice());
-                    }
-                    $this->userProductModel->clearCart($userId);
+                if (!empty($productsInCart)) {
+                    $orderData = new CreateOrderDTO($userId, $request->getName(), $request->getPhone(), $request->getAddress(), $request->getComment(), $totalPrice, $productsInCart);
+                    $this->orderService->create($orderData);
                     header('Location: /my_orders');
                 }else{
                     header('Location: /catalog');
