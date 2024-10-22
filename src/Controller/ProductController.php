@@ -29,7 +29,7 @@ class ProductController
             header('Location: /login');
             exit;
         } else {
-            $products = $this->productModel->getPrducts();
+            $products = $this->productModel->getProducts();
             $user= $this->userModel->getUserById($_SESSION['user_id']);
             require_once '../View/catalog.php';
         }
