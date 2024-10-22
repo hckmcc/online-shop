@@ -5,17 +5,20 @@ use Model\UserProduct;
 use Model\User;
 use Request\AddProductRequest;
 use Request\DeleteProductRequest;
+use Service\ProductService;
 
 class ProductController
 {
     private Product $productModel;
     private UserProduct $userProductModel;
     private User $userModel;
+    private ProductService  $productService;
     public function __construct()
     {
         $this->productModel = new Product();
         $this->userProductModel = new UserProduct();
         $this->userModel = new User();
+        $this->productService = new ProductService();
     }
     public function getProductsInCatalog():void
     {
@@ -26,7 +29,7 @@ class ProductController
             header('Location: /login');
             exit;
         } else {
-            $products = $this->productModel->getProducts();
+            $products = $this->productModel->getPrducts();
             $user= $this->userModel->getUserById($_SESSION['user_id']);
             require_once '../View/catalog.php';
         }
@@ -71,12 +74,7 @@ class ProductController
             }else{
                 $amount = $request->getProductAmount();
             }
-            $isProductInCart = $this->userProductModel->getUserProductInCart($userId, $request->getProductId());
-            if (!$isProductInCart) {
-                $this->userProductModel->addProductToCart($userId, $request->getProductId(), $amount);
-            } else {
-                $this->userProductModel->updateAmountInCart($userId, $request->getProductId(), $amount);
-            }
+            $this->productService->addToCart($userId, $request->getProductId(), $amount);
             header('Location: /catalog');
         }
     }

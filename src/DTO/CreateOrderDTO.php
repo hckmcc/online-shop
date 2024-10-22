@@ -2,6 +2,8 @@
 
 namespace DTO;
 
+use PDO;
+
 class CreateOrderDTO
 {
     public function __construct(private int $userId,
@@ -10,7 +12,8 @@ class CreateOrderDTO
                                 private string $address,
                                 private string $comment,
                                 private float $price,
-                                private array $productsInCart
+                                private array $productsInCart,
+                                private PDO $pdo
     ){
 
     }
@@ -47,5 +50,10 @@ class CreateOrderDTO
     public function getProductsInCart(): array
     {
         return $this->productsInCart;
+    }
+
+    public function getPdo(): PDO
+    {
+        return $this->pdo;
     }
 }

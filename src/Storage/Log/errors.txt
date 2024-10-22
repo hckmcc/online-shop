@@ -1,0 +1,10 @@
+Message: Call to undefined method Model\Product::getPrducts()
+File: /var/www/html/src/Controller/ProductController.php
+Line: 32
+Datetime: 2024-10-22 17:32:07
+
+Message: Call to undefined method Model\Product::getPrducts()
+File: /var/www/html/src/Controller/ProductController.php
+Line: 32
+Datetime: 2024-10-22 17:33:42
+

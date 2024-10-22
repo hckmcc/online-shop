@@ -77,7 +77,7 @@ class OrderController
             $totalPrice = $this->countCartSum($productsInCart);
             if (empty($errors)) {
                 if (!empty($productsInCart)) {
-                    $orderData = new CreateOrderDTO($userId, $request->getName(), $request->getPhone(), $request->getAddress(), $request->getComment(), $totalPrice, $productsInCart);
+                    $orderData = new CreateOrderDTO($userId, $request->getName(), $request->getPhone(), $request->getAddress(), $request->getComment(), $totalPrice, $productsInCart, $this->userProductModel->getPDO());
                     $this->orderService->create($orderData);
                     header('Location: /my_orders');
                 }else{

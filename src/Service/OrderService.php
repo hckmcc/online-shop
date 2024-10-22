@@ -18,13 +18,21 @@ class OrderService
         $this->orderProductModel = new OrderProduct();
     }
 
-    public function create(CreateOrderDTO $data): void
+    public function create(CreateOrderDTO $orderData): void
     {
-        $orderId = $this->orderModel->createOrder($data->getUserId(), $data->getName(), $data->getPhone(), $data->getAddress(), $data->getComment(), $data->getPrice());
-        $productsInCart = $data->getProductsInCart();
-        foreach ($productsInCart as $product){
-            $this->orderProductModel->addProductsToOrder($orderId, $product->getProductId(), $product->getProductAmount(), $product->getProductPrice());
+        $pdo = $orderData->getPdo();
+        $pdo->beginTransaction();
+        try {
+            $orderId = $this->orderModel->createOrder($orderData->getUserId(), $orderData->getName(), $orderData->getPhone(), $orderData->getAddress(), $orderData->getComment(), $orderData->getPrice());
+            $productsInCart = $orderData->getProductsInCart();
+            foreach ($productsInCart as $product){
+                $this->orderProductModel->addProductsToOrder($orderId, $product->getProductId(), $product->getProductAmount(), $product->getProductPrice());
+            }
+            $this->userProductModel->clearCart($orderData->getUserId());
+        } catch (\PDOException $exception) {
+            $pdo->rollBack();
+            throw $exception;
         }
-        $this->userProductModel->clearCart($data->getUserId());
+        $pdo->commit();
     }
 }
