@@ -3,24 +3,25 @@ namespace Controller;
 use Model\User;
 use Request\LoginRequest;
 use Request\RegisterRequest;
+use Service\AuthService;
 
 require_once '../Model/User.php';
 class UserController
 {
     private User $userModel;
+    private AuthService $authService;
+
     public function __construct()
     {
         $this->userModel = new User();
+        $this->authService = new AuthService();
     }
     public function login(LoginRequest $request): void
     {
         $errors = $request->validation();
 
         if (empty($errors)){
-            $user = $this->userModel->getUserByEmail($request->getEmail());
-            if (!is_null($user) and password_verify($request->getPassword(), $user->getPassword())) {
-                session_start();
-                $_SESSION['user_id'] = $user->getId();
+            if($this->authService->login($request->getEmail(), $request->getPassword())){
                 header('Location: /catalog');
                 exit;
             }else{
@@ -42,10 +43,7 @@ class UserController
     }
     public function logout(): void
     {
-        session_start();
-        if(isset($_SESSION['user_id'])){
-            unset($_SESSION['user_id']);
-        }
+        $this->authService->logout();
         header('Location: /login');
     }
     public function getLoginPage(): void

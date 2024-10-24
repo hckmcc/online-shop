@@ -10,9 +10,9 @@ class Order extends Model
     private string $comment;
     private float $price;
     private array $products;
-    public function getUserOrders(int $userId): ?array
+    public static function getUserOrders(int $userId): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id ORDER BY id DESC");
+        $stmt = self::getPDO()->prepare("SELECT * FROM orders WHERE user_id = :user_id ORDER BY id DESC");
         $stmt->execute(['user_id' => $userId]);
         $stmt = $stmt->fetchAll();
         if(empty($stmt)){
@@ -25,9 +25,9 @@ class Order extends Model
         }
         return $orders;
     }
-    public function createOrder(int $userId, string $name, string $phone, string $address, string $comment, float $totalPrice): int
+    public static function createOrder(int $userId, string $name, string $phone, string $address, string $comment, float $totalPrice): int
     {
-        $stmt = $this->pdo->prepare("INSERT INTO orders (user_id, name, phone, address, comment, price) VALUES (:user_id, :name, :phone, :address, :comment, :price) RETURNING id");
+        $stmt = self::getPDO()->prepare("INSERT INTO orders (user_id, name, phone, address, comment, price) VALUES (:user_id, :name, :phone, :address, :comment, :price) RETURNING id");
         $stmt->execute(['user_id' => $userId, 'name' => $name, 'phone' => $phone, 'address' => $address, 'comment' => $comment, 'price' => $totalPrice]);
         $orderId = $stmt->fetch();
         return $orderId['id'];

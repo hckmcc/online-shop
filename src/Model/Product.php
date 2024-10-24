@@ -7,9 +7,9 @@ class Product extends Model
     private string $categoryName;
     private int $price;
     private string $photo;
-    public function getProducts(): ?array
+    public static function getProducts(): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM products");
+        $stmt = self::getPDO()->prepare("SELECT * FROM products");
         $stmt->execute();
         $stmt = $stmt->fetchAll();
         if(empty($stmt)){
@@ -23,9 +23,9 @@ class Product extends Model
         return $products;
     }
 
-    public function getOneProduct(int $productId): ?Product
+    public static function getOneProduct(int $productId): ?Product
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :product_id");
+        $stmt = self::getPDO()->prepare("SELECT * FROM products WHERE id = :product_id");
         $stmt->execute(['product_id' => $productId]);
         $stmt = $stmt->fetch();
         if(empty($stmt)){

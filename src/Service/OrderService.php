@@ -2,6 +2,7 @@
 
 namespace Service;
 use DTO\CreateOrderDTO;
+use Model\Model;
 use Model\Order;
 use Model\OrderProduct;
 use Model\UserProduct;
@@ -20,7 +21,7 @@ class OrderService
 
     public function create(CreateOrderDTO $orderData): void
     {
-        $pdo = $orderData->getPdo();
+        $pdo = Model::getPdo();
         $pdo->beginTransaction();
         try {
             $orderId = $this->orderModel->createOrder($orderData->getUserId(), $orderData->getName(), $orderData->getPhone(), $orderData->getAddress(), $orderData->getComment(), $orderData->getPrice());

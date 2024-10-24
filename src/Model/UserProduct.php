@@ -4,9 +4,9 @@ class UserProduct extends Model
 {
     private Product $product;
     private int $productAmount;
-    public function getProductsInCart(int $userId): ?array
+    public static function getProductsInCart(int $userId): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT *
+        $stmt = self::getPDO()->prepare("SELECT *
                          FROM user_products up
                          JOIN products p ON up.product_id = p.id
                          WHERE up.user_id = :user_id; ");
@@ -22,34 +22,34 @@ class UserProduct extends Model
         }
         return $products;
     }
-    public function addProductToCart(int $userId, int $productId, int $amount): void
+    public static function addProductToCart(int $userId, int $productId, int $amount): void
     {
-        $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
+        $stmt = self::getPDO()->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $amount]);
     }
 
-    public function updateAmountInCart(int $userId, int $productId, int $amount): void
+    public static function updateAmountInCart(int $userId, int $productId, int $amount): void
     {
-        $stmt = $this->pdo->prepare("UPDATE user_products SET amount = amount+:amount WHERE user_id = :user_id AND product_id = :product_id");
+        $stmt = self::getPDO()->prepare("UPDATE user_products SET amount = amount+:amount WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $amount]);
     }
-    public function getUserProductInCart(int $userId, int $productId): bool
+    public static function getUserProductInCart(int $userId, int $productId): bool
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
+        $stmt = self::getPDO()->prepare("SELECT * FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
         if($stmt->fetch()){
             return true;
         }
         return false;
     }
-    public function clearCart(int $userId):void
+    public static function clearCart(int $userId):void
     {
-        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id");
+        $stmt = self::getPDO()->prepare("DELETE FROM user_products WHERE user_id = :user_id");
         $stmt->execute(['user_id' => $userId]);
     }
-    public function deleteProductFromCart(int $userId, int $productId):void
+    public static function deleteProductFromCart(int $userId, int $productId):void
     {
-        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
+        $stmt = self::getPDO()->prepare("DELETE FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
     }
 

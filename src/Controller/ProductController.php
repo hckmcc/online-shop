@@ -5,45 +5,43 @@ use Model\UserProduct;
 use Model\User;
 use Request\AddProductRequest;
 use Request\DeleteProductRequest;
-use Service\ProductService;
+use Service\AuthService;
+use Service\CartService;
 
 class ProductController
 {
     private Product $productModel;
     private UserProduct $userProductModel;
     private User $userModel;
-    private ProductService  $productService;
+    private CartService  $productService;
+    private AuthService $authService;
+
     public function __construct()
     {
         $this->productModel = new Product();
         $this->userProductModel = new UserProduct();
         $this->userModel = new User();
-        $this->productService = new ProductService();
+        $this->productService = new CartService();
+        $this->authService = new AuthService();
     }
     public function getProductsInCatalog():void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         } else {
             $products = $this->productModel->getProducts();
-            $user= $this->userModel->getUserById($_SESSION['user_id']);
+            $user= $this->authService->getCurrentUser();
             require_once '../View/catalog.php';
         }
     }
 
     public function getProductsInCart():void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             $productsInCart = $this->userProductModel->getProductsInCart($userId);
             $user= $this->userModel->getUserById($userId);
             require_once '../View/cart.php';
@@ -52,13 +50,10 @@ class ProductController
 
     public function addProductToCart(AddProductRequest $request):void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             if (!empty(intval($request->getProductId()))) {
                 $product = $this->productModel->getOneProduct(intval($request->getProductId()));
                 if (empty($product)) {
@@ -80,13 +75,10 @@ class ProductController
     }
     public function deleteProductFromCart(DeleteProductRequest $request):void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             if (empty(intval($request->getProductId()))) {
                 http_response_code(400);
                 exit;

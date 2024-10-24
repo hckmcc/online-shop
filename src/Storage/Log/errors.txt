@@ -8,3 +8,27 @@ File: /var/www/html/src/Controller/ProductController.php
 Line: 32
 Datetime: 2024-10-22 17:33:42
 
+Message: Call to undefined method DTO\CreateOrderDTO::getProductsInart()
+Message: /var/www/html/src/Service/OrderService.php
+Message: 28
+Message: 2024-10-24 18:38:39
+Message: 
+
+Message: Call to undefined method DTO\CreateOrderDTO::getProductsInart()
+File: /var/www/html/src/Service/OrderService.php
+Line: 28
+Datetime: 2024-10-24 18:42:22
+0: 
+
+Message: Call to undefined method DTO\CreateOrderDTO::getProductsInart()
+File: /var/www/html/src/Service/OrderService.php
+Line: 28
+Datetime: 2024-10-24 18:42:59
+ : 
+
+Message: Call to undefined method DTO\CreateOrderDTO::getProductsInart()
+File: /var/www/html/src/Service/OrderService.php
+Line: 28
+Datetime: 2024-10-24 18:43:43
+  
+

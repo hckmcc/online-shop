@@ -4,7 +4,7 @@ namespace Service;
 
 use Model\UserProduct;
 
-class ProductService
+class CartService
 {
     private UserProduct $userProductModel;
     public function __construct()

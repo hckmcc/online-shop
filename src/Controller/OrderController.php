@@ -2,11 +2,11 @@
 namespace Controller;
 use DTO\CreateOrderDTO;
 use Model\Order;
-use Model\Product;
 use Model\UserProduct;
 use Model\OrderProduct;
 use Model\User;
 use Request\OrderRequest;
+use Service\AuthService;
 use Service\OrderService;
 
 class OrderController
@@ -16,6 +16,7 @@ class OrderController
     private UserProduct $userProductModel;
     private User $userModel;
     private OrderService $orderService;
+    private AuthService  $authService;
     public function __construct()
     {
         $this->orderModel = new Order();
@@ -23,16 +24,14 @@ class OrderController
         $this->userProductModel = new UserProduct();
         $this->userModel = new User();
         $this->orderService = new OrderService();
+        $this->authService = new AuthService();
     }
     public function getOrderPage():void
     {
-        if (!isset($_SESSION)) {
-        session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             $productsInCart= $this->userProductModel->getProductsInCart($userId);
             if(is_null($productsInCart)){
                 header('Location: /catalog');
@@ -44,13 +43,10 @@ class OrderController
     }
     public function getUserOrderList():void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             $orders = $this->orderModel->getUserOrders($userId);
             if(!is_null($orders)){
                 foreach ($orders as &$order) {
@@ -64,14 +60,11 @@ class OrderController
     }
     public function createOrder(OrderRequest $request):void
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: /login');
             exit;
         } else {
-            $userId = $_SESSION['user_id'];
+            $userId = $this->authService->getCurrentUser()->getId();
             $errors = $request->validation();
             $productsInCart = $this->userProductModel->getProductsInCart($userId);
             $totalPrice = $this->countCartSum($productsInCart);

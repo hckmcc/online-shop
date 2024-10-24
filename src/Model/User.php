@@ -7,9 +7,9 @@ class User extends Model
     private string $email;
     private string $password;
 
-    public function getUserById(int $id): ?User
+    public static function getUserById(int $id): ?User
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE id= :id');
+        $stmt = self::getPDO()->prepare('SELECT * FROM users WHERE id= :id');
         $stmt->execute(['id' => $id]);
         $stmt = $stmt->fetch();
         if(empty($stmt)){
@@ -19,9 +19,9 @@ class User extends Model
         $userObj->setProperties($stmt);
         return $userObj;
     }
-    public function getUserByEmail(string $email): ?User
+    public static function getUserByEmail(string $email): ?User
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email= :email');
+        $stmt = self::getPDO()->prepare('SELECT * FROM users WHERE email= :email');
         $stmt->execute(['email' => $email]);
         $stmt = $stmt->fetch();
         if(empty($stmt)){
@@ -32,9 +32,9 @@ class User extends Model
         return $userObj;
     }
 
-    public function addUserToDB(string $name, string $email, string $password): void
+    public static function addUserToDB(string $name, string $email, string $password): void
     {
-        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+        $stmt = self::getPDO()->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
         $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password]);
     }
     public function getId(): int

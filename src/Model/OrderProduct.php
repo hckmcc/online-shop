@@ -8,9 +8,9 @@ class OrderProduct extends Model
     private float $productPrice;
     private string $productPhoto;
     private int $productAmount;
-    public function getProductsInOrder(int $orderId):?array
+    public static function getProductsInOrder(int $orderId):?array
     {
-        $stmt = $this->pdo->prepare("SELECT p.id, p.name, p.category_name, p.photo, op.price, op.amount FROM products p JOIN order_products op ON op.product_id=p.id WHERE op.order_id = :order_id;");
+        $stmt = self::getPDO()->prepare("SELECT p.id, p.name, p.category_name, p.photo, op.price, op.amount FROM products p JOIN order_products op ON op.product_id=p.id WHERE op.order_id = :order_id;");
         $stmt->execute(['order_id' => $orderId]);
         $stmt = $stmt->fetchAll();
         if(empty($stmt)){
@@ -23,9 +23,9 @@ class OrderProduct extends Model
         }
         return $products;
     }
-    public function addProductsToOrder(int $orderId, int $productId, int $amount, float $price):void
+    public static function addProductsToOrder(int $orderId, int $productId, int $amount, float $price):void
     {
-        $stmt = $this->pdo->prepare("INSERT INTO order_products (order_id, product_id, amount, price) VALUES (:order_id, :product_id, :amount, :price)");
+        $stmt = self::getPDO()->prepare("INSERT INTO order_products (order_id, product_id, amount, price) VALUES (:order_id, :product_id, :amount, :price)");
         $stmt->execute(['order_id' => $orderId, 'product_id' => $productId, 'amount' => $amount, 'price' => $price]);
     }
     public function getProductId(): int
