@@ -3,18 +3,16 @@ namespace Controller;
 use Model\User;
 use Request\LoginRequest;
 use Request\RegisterRequest;
-use Service\AuthService;
+use Service\Auth\AuthServiceInterface;
 
 require_once '../Model/User.php';
 class UserController
 {
-    private User $userModel;
-    private AuthService $authService;
+    private AuthServiceInterface $authService;
 
-    public function __construct()
+    public function __construct(array $properties)
     {
-        $this->userModel = new User();
-        $this->authService = new AuthService();
+        $this->authService = $properties['AuthService'];
     }
     public function login(LoginRequest $request): void
     {
@@ -32,10 +30,10 @@ class UserController
     }
     public function register(RegisterRequest $request): void
     {
-        $errors = $request->validation($this->userModel);
+        $errors = $request->validation();
         if (empty($errors)) {
             $hash = password_hash($request->getPassword(), PASSWORD_DEFAULT);
-            $this->userModel->addUserToDB($request->getName(), $request->getEmail(), $hash);
+            User::addUserToDB($request->getName(), $request->getEmail(), $hash);
             header('Location: /login');
             exit;
         }

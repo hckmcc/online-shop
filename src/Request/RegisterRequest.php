@@ -18,7 +18,7 @@ class RegisterRequest extends Request
     {
         return $this->data['psw'];
     }
-    public function validation(User $userModel):array
+    public function validation():array
     {
         $errors = [];
         if (empty($this->data['name'])) {
@@ -30,7 +30,7 @@ class RegisterRequest extends Request
             $errors['email'] = 'Enter email';
         }elseif(!filter_var($this->data['email'], FILTER_VALIDATE_EMAIL)){
             $errors['email'] = 'Invalid email!';
-        }elseif($userModel->getUserByEmail($this->data['email'])->getEmail()){
+        }elseif(User::getUserByEmail($this->data['email'])->getEmail()){
             $errors['email'] = 'Email already exists!';
         }
         if (empty($this->data['psw'])) {

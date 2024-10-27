@@ -1,10 +1,10 @@
 <?php
 
-namespace Service;
+namespace Service\Auth;
 
 use Model\User;
 
-class AuthService
+class AuthSessionService implements AuthServiceInterface
 {
     public function check(): bool
     {

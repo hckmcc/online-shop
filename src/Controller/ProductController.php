@@ -1,28 +1,22 @@
 <?php
 namespace Controller;
 use Model\Product;
-use Model\UserProduct;
 use Model\User;
+use Model\UserProduct;
 use Request\AddProductRequest;
 use Request\DeleteProductRequest;
-use Service\AuthService;
+use Service\Auth\AuthServiceInterface;
 use Service\CartService;
 
 class ProductController
 {
-    private Product $productModel;
-    private UserProduct $userProductModel;
-    private User $userModel;
-    private CartService  $productService;
-    private AuthService $authService;
+    private CartService  $cartService;
+    private AuthServiceInterface $authService;
 
-    public function __construct()
+    public function __construct(array $properties)
     {
-        $this->productModel = new Product();
-        $this->userProductModel = new UserProduct();
-        $this->userModel = new User();
-        $this->productService = new CartService();
-        $this->authService = new AuthService();
+        $this->cartService = $properties['CartService'];
+        $this->authService = $properties['AuthService'];
     }
     public function getProductsInCatalog():void
     {
@@ -30,7 +24,7 @@ class ProductController
             header('Location: /login');
             exit;
         } else {
-            $products = $this->productModel->getProducts();
+            $products = Product::getProducts();
             $user= $this->authService->getCurrentUser();
             require_once '../View/catalog.php';
         }
@@ -42,8 +36,8 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $this->authService->getCurrentUser()->getId();
-            $productsInCart = $this->userProductModel->getProductsInCart($userId);
-            $user= $this->userModel->getUserById($userId);
+            $productsInCart = UserProduct::getProductsInCart($userId);
+            $user= User::getUserById($userId);
             require_once '../View/cart.php';
         }
     }
@@ -55,7 +49,7 @@ class ProductController
         } else {
             $userId = $this->authService->getCurrentUser()->getId();
             if (!empty(intval($request->getProductId()))) {
-                $product = $this->productModel->getOneProduct(intval($request->getProductId()));
+                $product = Product::getOneProduct(intval($request->getProductId()));
                 if (empty($product)) {
                     http_response_code(400);
                     exit;
@@ -69,7 +63,7 @@ class ProductController
             }else{
                 $amount = $request->getProductAmount();
             }
-            $this->productService->addToCart($userId, $request->getProductId(), $amount);
+            $this->cartService->addToCart($userId, $request->getProductId(), $amount);
             header('Location: /catalog');
         }
     }
@@ -83,7 +77,7 @@ class ProductController
                 http_response_code(400);
                 exit;
             }
-            $this->userProductModel->deleteProductFromCart($userId, intval($request->getProductId()));
+            UserProduct::deleteProductFromCart($userId, intval($request->getProductId()));
             header('Location: /cart');
         }
     }

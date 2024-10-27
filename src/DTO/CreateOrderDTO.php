@@ -12,8 +12,7 @@ class CreateOrderDTO
                                 private string $address,
                                 private string $comment,
                                 private float $price,
-                                private array $productsInCart,
-                                private PDO $pdo
+                                private array $productsInCart
     ){
 
     }
@@ -50,10 +49,5 @@ class CreateOrderDTO
     public function getProductsInCart(): array
     {
         return $this->productsInCart;
-    }
-
-    public function getPdo(): PDO
-    {
-        return $this->pdo;
     }
 }
