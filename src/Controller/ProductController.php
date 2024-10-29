@@ -1,5 +1,6 @@
 <?php
 namespace Controller;
+use Exception;
 use Model\Product;
 use Model\User;
 use Model\UserProduct;
@@ -13,10 +14,10 @@ class ProductController
     private CartService  $cartService;
     private AuthServiceInterface $authService;
 
-    public function __construct(array $properties)
+    public function __construct(AuthServiceInterface $authService, CartService  $cartService)
     {
-        $this->cartService = $properties['CartService'];
-        $this->authService = $properties['AuthService'];
+        $this->cartService = $cartService;
+        $this->authService = $authService;
     }
     public function getProductsInCatalog():void
     {

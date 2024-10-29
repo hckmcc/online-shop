@@ -13,10 +13,10 @@ class OrderController
 {
     private OrderService $orderService;
     private AuthServiceInterface  $authService;
-    public function __construct(array $properties)
+    public function __construct(AuthServiceInterface $authService, OrderService $orderService)
     {
-        $this->orderService = $properties['OrderService'];
-        $this->authService = $properties['AuthService'];
+        $this->orderService = $orderService;
+        $this->authService = $authService;
     }
     public function getOrderPage():void
     {

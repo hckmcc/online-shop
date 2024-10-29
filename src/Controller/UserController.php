@@ -10,9 +10,9 @@ class UserController
 {
     private AuthServiceInterface $authService;
 
-    public function __construct(array $properties)
+    public function __construct(AuthServiceInterface $authService)
     {
-        $this->authService = $properties['AuthService'];
+        $this->authService = $authService;
     }
     public function login(LoginRequest $request): void
     {

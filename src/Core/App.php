@@ -6,11 +6,11 @@ use Service\Logger\LoggerServiceInterface;
 
 class App
 {
-    private LoggerServiceInterface $loggerService;
     private array $routes = [];
-    public function __construct(LoggerServiceInterface $loggerService)
+    private Container $container;
+    public function __construct(Container $container)
     {
-        $this->loggerService = $loggerService;
+        $this->container = $container;
     }
     public function run(): void
     {
@@ -18,8 +18,8 @@ class App
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         if (array_key_exists($requestUri, $this->routes)) {
             if (array_key_exists($requestMethod, $this->routes[$requestUri])) {
-                $className = $this->routes[$requestUri][$requestMethod]['class'];
-                $class = new $className($this->routes[$requestUri][$requestMethod]['properties']);
+                $class = $this->routes[$requestUri][$requestMethod]['class'];
+                $object = $this->container->get($class);
                 $method = $this->routes[$requestUri][$requestMethod]['method'];
                 $requestClass = $this->routes[$requestUri][$requestMethod]['request'];
                 if (!empty($requestClass)){
@@ -28,9 +28,9 @@ class App
                     $request = new Request($requestUri, $requestMethod);
                 }
                 try {
-                    $class->$method($request);
+                    $object->$method($request);
                 } catch (\Throwable $e) {
-                    $this->loggerService->addErrorToLog('An error occurred',
+                    $this->container->get(LoggerServiceInterface::class)->addErrorToLog('An error occurred',
                         ['Message'=>$e->getMessage(),
                         'File'=>$e->getFile(),
                         'Line'=>$e->getLine(),
@@ -46,11 +46,10 @@ class App
             http_response_code(404);
         }
     }
-    public function addRoute(string $routeUri, string $routeMethod, string $class, string $classMethod, array $properties, string $requestClass=null): void
+    public function addRoute(string $routeUri, string $routeMethod, string $class, string $classMethod, string $requestClass=null): void
     {
         $this->routes[$routeUri][$routeMethod]['class']=$class;
         $this->routes[$routeUri][$routeMethod]['method']=$classMethod;
-        $this->routes[$routeUri][$routeMethod]['properties']=$properties;
         $this->routes[$routeUri][$routeMethod]['request']=$requestClass;
     }
 }
