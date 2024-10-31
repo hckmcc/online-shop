@@ -3,10 +3,10 @@
 <div class="container">
     <h3>Catalog</h3>
     <div class="card-deck">
-        <?php if(!is_null($products)): ?>
+        <?php if(!empty($products)): ?>
         <?php foreach($products as $product): ?>
         <div class="card text-center">
-            <a href="#">
+            <a href="/product?id=<?= $product->getId();?>">
                 <img class="card-img-top" src="<?= $product->getPhoto(); ?>" alt="">
                 <div class="card-body">
                     <p class="card-text text-muted"><?= $product->getCategoryName();?></p>

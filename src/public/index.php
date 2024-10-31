@@ -52,5 +52,7 @@ $app->addRoute('/delete_product','POST', ProductController::class,'deleteProduct
 $app->addRoute('/order','GET', OrderController::class,'getOrderPage');
 $app->addRoute('/order','POST', OrderController::class,'createOrder', OrderRequest::class);
 $app->addRoute('/my_orders','GET', OrderController::class,'getUserOrderList');
+$app->addRoute('/product','GET', ProductController::class,'getProductPage', \Request\GetProductRequest::class);
+$app->addRoute('/product','POST', ProductController::class,'addReview', \Request\AddReviewRequest::class);
 
 $app->run();

@@ -14,7 +14,7 @@ class App
     }
     public function run(): void
     {
-        $requestUri = $_SERVER['REQUEST_URI'];
+        $requestUri = $this->getRequestURI();
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         if (array_key_exists($requestUri, $this->routes)) {
             if (array_key_exists($requestMethod, $this->routes[$requestUri])) {
@@ -23,7 +23,13 @@ class App
                 $method = $this->routes[$requestUri][$requestMethod]['method'];
                 $requestClass = $this->routes[$requestUri][$requestMethod]['request'];
                 if (!empty($requestClass)){
-                    $request = new $requestClass($requestUri, $requestMethod, $_POST);
+                    if($requestMethod === 'POST'){
+                        $request = new $requestClass($requestUri, $requestMethod, $_POST);
+                    }elseif ($requestMethod === 'GET'){
+                        $request = new $requestClass($requestUri, $requestMethod, $_GET);
+                    }else{
+                        $request = new Request($requestUri, $requestMethod);
+                    }
                 }else{
                     $request = new Request($requestUri, $requestMethod);
                 }
@@ -51,5 +57,13 @@ class App
         $this->routes[$routeUri][$routeMethod]['class']=$class;
         $this->routes[$routeUri][$routeMethod]['method']=$classMethod;
         $this->routes[$routeUri][$routeMethod]['request']=$requestClass;
+    }
+    private function getRequestURI(): string
+    {
+        $requestUri = strstr($_SERVER['REQUEST_URI'],'?',true);
+        if(!$requestUri){
+            $requestUri = $_SERVER['REQUEST_URI'];
+        }
+        return $requestUri;
     }
 }
