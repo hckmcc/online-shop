@@ -47,16 +47,13 @@ class ProductController
             }
             $user= $this->authService->getCurrentUser();
             $userId= $user->getId();
-            $productOrdered = $this->checkProductInUserOrders($userId, $request->getProductId());
+            $productOrdered = OrderProduct::checkProductInOrder($userId, $request->getProductId());
             $reviews = Review::getReviews($request->getProductId());
-            $meanRating = 0;
-            $reviewsCount = 0;
-            if($reviews){
+            $meanRating = Review::getProductAverageRating($request->getProductId());
+            if($reviews) {
                 $reviewsCount = count($reviews);
-                foreach($reviews as $review){
-                    $meanRating+= $review->getRating();
-                }
-                $meanRating = round($meanRating/$reviewsCount, 1);
+            }else{
+                $reviewsCount = 0;
             }
             $user= $this->authService->getCurrentUser();
             require_once '../View/product.php';
@@ -120,42 +117,21 @@ class ProductController
             header('Location: /login');
         } else {
             $userId = $this->authService->getCurrentUser()->getId();
-            $productId = intval($request->getProductId());
-            $rating = intval($request->getRating());
-            $productOrdered = $this->checkProductInUserOrders($userId, $request->getProductId());
+            $errors = $request->validation();
+            $productId = $request->getProductId();
+            $productOrdered = OrderProduct::checkProductInOrder($userId, $request->getProductId());
 
-            if(!empty($rating) and $productOrdered) {
-                if (!empty($productId)) {
-                    $product = Product::getOneProduct($productId);
-                    if (empty($product)) {
-                        http_response_code(400);
-                        exit;
-                    }
-                } else {
+            if(empty($errors) and $productOrdered) {
+                $product = Product::getOneProduct($productId);
+                if (empty($product)) {
                     http_response_code(400);
                     exit;
                 }
-                if($rating>5 or $rating<1){
-                    http_response_code(400);
-                    exit;
-                }
-                Review::addReview($userId, $productId, $rating, $request->getReviewText());
+                Review::addReview($userId, $productId, $request->getRating(), $request->getReviewText());
+            }else{
+                http_response_code(400);
             }
             header("Location: /product?id=$productId");
         }
-    }
-    private function checkProductInUserOrders(int $userId, int $productId):bool
-    {
-        $userOrders = Order::getUserOrders($userId);
-        $productOrdered = false;
-        if($userOrders){
-            foreach($userOrders as $order){
-                if(OrderProduct::checkProductInOrder($order->getId(), $productId)){
-                    $productOrdered = true;
-                    break;
-                };
-            }
-        }
-        return $productOrdered;
     }
 }

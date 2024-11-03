@@ -26,7 +26,7 @@ if(empty($reviews)){
                     <div class="product-info">
                         <div class="reviews-counter">
                             <div class="rate">
-                                <span>Mean rating: <?= $meanRating ?> </span>
+                                <span>Average rating: <?= $meanRating ?> </span>
                             </div>
                             <span><?= $reviewsCount ?> Reviews</span>
                         </div>

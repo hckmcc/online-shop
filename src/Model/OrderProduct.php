@@ -23,10 +23,10 @@ class OrderProduct extends Model
         }
         return $products;
     }
-    public static function checkProductInOrder(int $orderId, int $productId):bool
+    public static function checkProductInOrder(int $userId, int $productId):bool
     {
-        $stmt = self::getPDO()->prepare("SELECT * FROM order_products WHERE order_id = :order_id AND product_id = :product_id;");
-        $stmt->execute(['order_id' => $orderId, 'product_id' => $productId]);
+        $stmt = self::getPDO()->prepare("SELECT * FROM order_products op JOIN orders o ON op.order_id=o.id WHERE user_id = :user_id AND product_id = :product_id;");
+        $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
         $stmt = $stmt->fetchAll();
         if(empty($stmt)){
             return false;

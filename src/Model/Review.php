@@ -29,6 +29,12 @@ class Review extends Model
         }
         return $reviews;
     }
+    public static function getProductAverageRating(int $productId): ?float
+    {
+        $stmt = self::getPDO()->prepare("SELECT AVG(rating) FROM reviews WHERE product_id = :product_id;");
+        $stmt->execute(['product_id' => $productId]);
+        return $stmt->fetch();
+    }
 
     public function getId(): int
     {
